@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Customer\Controllers\CustomerController;
 use App\Modules\ServiceArea\Controllers\ServiceAreaController;
 use App\Modules\Technician\Controllers\TechnicianController;
+use App\Modules\Complaint\Controllers\ComplaintController;
+
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -58,4 +60,24 @@ Route::middleware('auth:sanctum')->group(function () {
             'updateAvailability',
         ]);
     });
+
+    Route::middleware('role:customer,agent,dispatcher,supervisor,admin')
+    ->group(function () {
+        Route::get('/complaints', [ComplaintController::class, 'index']);
+        Route::get('/complaints/{complaint}', [ComplaintController::class, 'show']);
+        Route::get('/complaints/{complaint}/timeline', [
+            ComplaintController::class,
+            'timeline',
+        ]);
+    });
+
+    Route::middleware('role:customer,agent,admin')
+        ->post('/complaints', [ComplaintController::class, 'store']);
+
+    Route::middleware('role:agent,dispatcher,supervisor,admin')
+        ->patch('/complaints/{complaint}/status', [
+            ComplaintController::class,
+            'updateStatus',
+        ]);
+    
 });

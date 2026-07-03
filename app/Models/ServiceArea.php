@@ -18,4 +18,9 @@ class ServiceArea extends Model
     {
         return $this->hasMany(Technician::class);
     }
+
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(Complaint::class);
+    }
 }
