@@ -6,7 +6,7 @@ use App\Modules\Customer\Controllers\CustomerController;
 use App\Modules\ServiceArea\Controllers\ServiceAreaController;
 use App\Modules\Technician\Controllers\TechnicianController;
 use App\Modules\Complaint\Controllers\ComplaintController;
-
+use App\Modules\AIClassification\Controllers\AIClassificationController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -79,5 +79,20 @@ Route::middleware('auth:sanctum')->group(function () {
             ComplaintController::class,
             'updateStatus',
         ]);
+
+
+    Route::middleware([
+        'role:agent,dispatcher,supervisor,admin',
+        'throttle:10,1',
+    ])->post('/complaints/{complaint}/ai-classify', [
+        AIClassificationController::class,
+        'classify',
+    ]);
+
+    Route::middleware('role:customer,agent,dispatcher,supervisor,admin')
+        ->get('/complaints/{complaint}/ai-classification', [
+            AIClassificationController::class,
+            'show',
+    ]);
     
 });
