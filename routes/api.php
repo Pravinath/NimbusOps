@@ -7,6 +7,8 @@ use App\Modules\ServiceArea\Controllers\ServiceAreaController;
 use App\Modules\Technician\Controllers\TechnicianController;
 use App\Modules\Complaint\Controllers\ComplaintController;
 use App\Modules\AIClassification\Controllers\AIClassificationController;
+use App\Modules\Dispatch\Controllers\DispatchController;
+
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -94,5 +96,17 @@ Route::middleware('auth:sanctum')->group(function () {
             AIClassificationController::class,
             'show',
     ]);
+
+    Route::middleware('role:dispatcher,supervisor,admin')
+        ->get('/complaints/{complaint}/suggest-technicians', [
+            DispatchController::class,
+            'suggestions',
+        ]);
+
+    Route::middleware('role:dispatcher,admin')
+        ->post('/complaints/{complaint}/assign-technician', [
+            DispatchController::class,
+            'assign',
+        ]);
     
 });
