@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+
 class Complaint extends Model
 {
     protected $fillable = [
@@ -53,5 +54,16 @@ class Complaint extends Model
     public function aiClassification(): HasOne
     {
         return $this->hasOne(ComplaintAiClassification::class);
+    }
+
+
+    public function technicianAssignments(): HasMany
+    {
+        return $this->hasMany(TechnicianAssignment::class);
+    }
+
+    public function workOrder(): HasOne
+    {
+        return $this->hasOne(WorkOrder::class);
     }
 }
