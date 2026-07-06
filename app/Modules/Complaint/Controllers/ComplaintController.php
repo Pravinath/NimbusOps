@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use App\Modules\Complaint\Services\ComplaintStatusService;
+use App\Modules\SLA\Services\SlaService;
+
 
 class ComplaintController extends Controller
 {
@@ -60,6 +62,8 @@ class ComplaintController extends Controller
 
             return $complaint;
         });
+
+        $complaint = $this->slaService->assignDeadline($complaint);
 
         $complaint->load([
             'customer.user',
@@ -141,7 +145,8 @@ class ComplaintController extends Controller
     }
 
     public function __construct(
-        private ComplaintStatusService $statusService
+        private ComplaintStatusService $statusService,
+        private SlaService $slaService
     ) {
     }
 }

@@ -6,11 +6,13 @@ use App\Models\Complaint;
 use App\Models\ComplaintAiClassification;
 use App\Modules\AIClassification\Contracts\AIClassificationProvider;
 use Illuminate\Support\Facades\DB;
+use App\Modules\SLA\Services\SlaService;
 
 class AIClassificationService
 {
     public function __construct(
-        private AIClassificationProvider $provider
+        private AIClassificationProvider $provider,
+        private SlaService $slaService
     ) {
     }
 
@@ -51,6 +53,7 @@ class AIClassificationService
             }
 
             $complaint->save();
+            $complaint = $this->slaService->assignDeadline($complaint);
 
             $complaint->timelines()->create([
                 'user_id' => $userId,
