@@ -63,4 +63,9 @@ class WorkOrder extends Model
         return $this->hasMany(WorkOrderUpdate::class)
             ->latest();
     }
+
+    public function sparePartUsages(): HasMany
+    {
+        return $this->hasMany(WorkOrderSparePart::class);
+    }
 }

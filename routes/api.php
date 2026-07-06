@@ -9,6 +9,8 @@ use App\Modules\Complaint\Controllers\ComplaintController;
 use App\Modules\AIClassification\Controllers\AIClassificationController;
 use App\Modules\Dispatch\Controllers\DispatchController;
 use App\Modules\WorkOrder\Controllers\WorkOrderController;
+use App\Modules\Inventory\Controllers\InventoryController;
+
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -155,5 +157,57 @@ Route::middleware('auth:sanctum')->group(function () {
                     'addUpdate',
                 ]);
             });
+
+
+Route::middleware(
+    'role:technician,inventory,dispatcher,supervisor,admin'
+)->group(function () {
+    Route::get('/spare-parts', [
+        InventoryController::class,
+        'index',
+    ]);
+
+    Route::get('/spare-parts/{sparePart}', [
+        InventoryController::class,
+        'show',
+    ]);
+});
+
+Route::middleware('role:inventory,admin')
+    ->group(function () {
+        Route::post('/spare-parts', [
+            InventoryController::class,
+            'store',
+        ]);
+
+        Route::patch('/spare-parts/{sparePart}', [
+            InventoryController::class,
+            'update',
+        ]);
+
+        Route::patch('/spare-parts/{sparePart}/stock', [
+            InventoryController::class,
+            'adjust',
+        ]);
+    });
+
+Route::middleware('role:inventory,supervisor,admin')
+    ->group(function () {
+        Route::get('/inventory/low-stock', [
+            InventoryController::class,
+            'lowStock',
+        ]);
+
+        Route::get('/stock-movements', [
+            InventoryController::class,
+            'movements',
+        ]);
+    });
+
+Route::middleware('role:technician,admin')
+    ->post('/work-orders/{workOrder}/use-spare-part', [
+        InventoryController::class,
+        'useSparePart',
+    ]);
     
 });
