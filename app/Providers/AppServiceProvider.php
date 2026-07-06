@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use App\Modules\AIClassification\Contracts\AIClassificationProvider;
 use App\Modules\AIClassification\Providers\MockAIProvider;
+use App\Models\WorkOrder;
+use App\Modules\WorkOrder\Policies\WorkOrderPolicy;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -22,5 +25,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(Complaint::class, ComplaintPolicy::class);
+        Gate::policy(WorkOrder::class, WorkOrderPolicy::class);
     }
 }
