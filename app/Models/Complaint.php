@@ -20,6 +20,10 @@ class Complaint extends Model
         'status',
         'priority',
         'resolved_at',
+        'sla_due_at',
+        'is_sla_breached',
+        'sla_breached_at',
+        'sla_escalated_at',
     ];
 
     protected function casts(): array
@@ -27,6 +31,11 @@ class Complaint extends Model
         return [
             'preferred_visit_time' => 'datetime',
             'resolved_at' => 'datetime',
+            'sla_due_at' => 'datetime',
+            'is_sla_breached' => 'boolean',
+            'sla_breached_at' => 'datetime',
+            'sla_escalated_at' => 'datetime',
+
         ];
     }
 
