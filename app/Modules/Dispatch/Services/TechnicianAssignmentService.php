@@ -7,14 +7,18 @@ use App\Models\Technician;
 use App\Models\TechnicianAssignment;
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Modules\Audit\Services\AuditService;
 use App\Modules\Complaint\Services\ComplaintStatusService;
+use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class TechnicianAssignmentService
 {
     public function __construct(
-        private ComplaintStatusService $statusService
+        private ComplaintStatusService $statusService,
+        private AuditService $auditService,
+        private NotificationService $notificationService
     ) {
     }
 
@@ -117,11 +121,28 @@ class TechnicianAssignmentService
                 ],
             ]);
 
-            return $assignment->load([
+            $assignment->load([
                 'technician.user',
                 'assignedBy',
                 'workOrder',
             ]);
+
+            $this->auditService->record(
+                'technician_assigned',
+                $assignment,
+                $assignedBy,
+                request(),
+                [
+                    'complaint_id' => $complaint->id,
+                    'technician_id' => $technician->id,
+                    'work_order_id' => $assignment->workOrder?->id,
+                    'override' => $overrideAllowed,
+                ]
+            );
+
+            $this->notificationService->technicianAssigned($assignment);
+
+            return $assignment;
         });
     }
 }

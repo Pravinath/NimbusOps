@@ -4,11 +4,18 @@ namespace App\Modules\SLA\Services;
 
 use App\Models\Complaint;
 use App\Models\SlaPolicy;
+use App\Modules\Audit\Services\AuditService;
+use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
-
 
 class SlaService
 {
+    public function __construct(
+        private AuditService $auditService,
+        private NotificationService $notificationService
+    ) {
+    }
+
     public function assignDeadline(Complaint $complaint): Complaint
     {
         $policy = SlaPolicy::query()
@@ -97,6 +104,19 @@ class SlaService
                     'priority' => $complaint->priority,
                 ],
             ]);
+
+            $this->auditService->record(
+                'sla_breached',
+                $complaint,
+                null,
+                null,
+                [
+                    'priority' => $complaint->priority,
+                    'sla_due_at' => $complaint->sla_due_at->toISOString(),
+                ]
+            );
+
+            $this->notificationService->slaBreached($complaint);
         });
     }
 }

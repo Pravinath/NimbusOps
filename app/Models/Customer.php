@@ -25,4 +25,9 @@ class Customer extends Model
     {
         return $this->hasMany(Complaint::class);
     }
+
+    public function feedback(): HasMany
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

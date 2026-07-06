@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class WorkOrder extends Model
 {
@@ -67,5 +68,10 @@ class WorkOrder extends Model
     public function sparePartUsages(): HasMany
     {
         return $this->hasMany(WorkOrderSparePart::class);
+    }
+
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(Feedback::class);
     }
 }

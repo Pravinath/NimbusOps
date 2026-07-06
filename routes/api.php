@@ -10,6 +10,10 @@ use App\Modules\AIClassification\Controllers\AIClassificationController;
 use App\Modules\Dispatch\Controllers\DispatchController;
 use App\Modules\WorkOrder\Controllers\WorkOrderController;
 use App\Modules\Inventory\Controllers\InventoryController;
+use App\Modules\Feedback\Controllers\FeedbackController;
+use App\Modules\Audit\Controllers\AuditLogController;
+use App\Modules\Notification\Controllers\NotificationController;
+
 
 
 Route::prefix('auth')->group(function () {
@@ -191,23 +195,51 @@ Route::middleware('role:inventory,admin')
         ]);
     });
 
-Route::middleware('role:inventory,supervisor,admin')
-    ->group(function () {
-        Route::get('/inventory/low-stock', [
+    Route::middleware('role:inventory,supervisor,admin')
+        ->group(function () {
+            Route::get('/inventory/low-stock', [
+                InventoryController::class,
+                'lowStock',
+            ]);
+
+            Route::get('/stock-movements', [
+                InventoryController::class,
+                'movements',
+            ]);
+        });
+
+    Route::middleware('role:technician,admin')
+        ->post('/work-orders/{workOrder}/use-spare-part', [
             InventoryController::class,
-            'lowStock',
+            'useSparePart',
         ]);
 
-        Route::get('/stock-movements', [
-            InventoryController::class,
-            'movements',
+        Route::middleware('role:customer')
+        ->post('/feedback', [
+            FeedbackController::class,
+            'store',
         ]);
-    });
 
-Route::middleware('role:technician,admin')
-    ->post('/work-orders/{workOrder}/use-spare-part', [
-        InventoryController::class,
-        'useSparePart',
+    Route::middleware('role:customer,supervisor,admin')
+        ->get('/feedback/complaint/{complaint}', [
+            FeedbackController::class,
+            'showByComplaint',
+        ]);
+
+        Route::middleware('role:admin')
+        ->get('/audit-logs', [
+            AuditLogController::class,
+            'index',
+        ]);
+
+    Route::get('/notifications', [
+        NotificationController::class,
+        'index',
+    ]);
+
+    Route::patch('/notifications/{notification}/read', [
+        NotificationController::class,
+        'markRead',
     ]);
     
 });

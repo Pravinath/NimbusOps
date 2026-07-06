@@ -4,7 +4,9 @@ namespace App\Modules\WorkOrder\Services;
 
 use App\Models\User;
 use App\Models\WorkOrder;
+use App\Modules\Audit\Services\AuditService;
 use App\Modules\Complaint\Services\ComplaintStatusService;
+use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -21,7 +23,9 @@ class WorkOrderStatusService
     ];
 
     public function __construct(
-        private ComplaintStatusService $complaintStatusService
+        private ComplaintStatusService $complaintStatusService,
+        private AuditService $auditService,
+        private NotificationService $notificationService
     ) {
     }
 
@@ -120,6 +124,22 @@ class WorkOrderStatusService
                         'availability_status' => 'available',
                     ]);
                 }
+
+                $this->auditService->record(
+                    'work_order_completed',
+                    $workOrder,
+                    $user,
+                    request(),
+                    [
+                        'complaint_id' => $workOrder->complaint_id,
+                        'technician_id' => $workOrder->technician_id,
+                        'from_status' => $oldStatus,
+                        'to_status' => $newStatus,
+                    ]
+                );
+
+                $workOrder->loadMissing('complaint.customer.user');
+                $this->notificationService->complaintResolved($workOrder);
             }
 
             return $workOrder->fresh([
