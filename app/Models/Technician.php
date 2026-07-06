@@ -36,4 +36,9 @@ class Technician extends Model
     {
         return $this->hasMany(WorkOrder::class);
     }
+
+    public function sparePartUsages(): HasMany
+    {
+        return $this->hasMany(WorkOrderSparePart::class);
+    }
 }
