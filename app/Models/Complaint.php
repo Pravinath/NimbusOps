@@ -75,4 +75,9 @@ class Complaint extends Model
     {
         return $this->hasOne(WorkOrder::class);
     }
+
+    public function feedback(): HasOne
+    {
+        return $this->hasOne(Feedback::class);
+    }
 }

@@ -6,11 +6,19 @@ use App\Models\SparePart;
 use App\Models\User;
 use App\Models\WorkOrder;
 use App\Models\WorkOrderSparePart;
+use App\Modules\Audit\Services\AuditService;
+use App\Modules\Notification\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class StockService
 {
+    public function __construct(
+        private AuditService $auditService,
+        private NotificationService $notificationService
+    ) {
+    }
+
     public function createPart(array $data, User $user): SparePart
     {
         return DB::transaction(function () use ($data, $user) {
@@ -26,6 +34,18 @@ class StockService
                     'unit_cost' => $part->unit_cost,
                     'notes' => 'Initial stock recorded.',
                 ]);
+            }
+
+            $this->auditService->record(
+                'spare_part_created',
+                $part,
+                $user,
+                request(),
+                ['stock_quantity' => $part->stock_quantity]
+            );
+
+            if ($part->stock_quantity <= $part->reorder_level) {
+                $this->notificationService->lowStock($part);
             }
 
             return $part;
@@ -77,6 +97,26 @@ class StockService
                 'unit_cost' => $sparePart->unit_cost,
                 'notes' => $notes,
             ]);
+
+            $this->auditService->record(
+                'stock_updated',
+                $sparePart,
+                $user,
+                request(),
+                [
+                    'operation' => $operation,
+                    'quantity' => $quantity,
+                    'quantity_before' => $before,
+                    'quantity_after' => $after,
+                ]
+            );
+
+            if (
+                $after <= $sparePart->reorder_level
+                && $before > $sparePart->reorder_level
+            ) {
+                $this->notificationService->lowStock($sparePart);
+            }
 
             return $sparePart->fresh();
         });
@@ -184,6 +224,27 @@ class StockService
                     'total_cost' => $totalCost,
                 ],
             ]);
+
+            $this->auditService->record(
+                'spare_part_used',
+                $usage,
+                $user,
+                request(),
+                [
+                    'work_order_id' => $workOrder->id,
+                    'spare_part_id' => $sparePart->id,
+                    'quantity' => $quantity,
+                    'quantity_before' => $before,
+                    'quantity_after' => $after,
+                ]
+            );
+
+            if (
+                $after <= $sparePart->reorder_level
+                && $before > $sparePart->reorder_level
+            ) {
+                $this->notificationService->lowStock($sparePart);
+            }
 
             return $usage->load([
                 'sparePart',

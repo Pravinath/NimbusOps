@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use App\Modules\Complaint\Services\ComplaintStatusService;
 use App\Modules\SLA\Services\SlaService;
-
+use App\Modules\Audit\Services\AuditService;
+use App\Modules\Notification\Services\NotificationService;
 
 class ComplaintController extends Controller
 {
@@ -71,6 +72,20 @@ class ComplaintController extends Controller
             'createdBy',
             'timelines',
         ]);
+
+        $this->auditService->record(
+            'complaint_created',
+            $complaint,
+            $request->user(),
+            $request,
+            [
+                'customer_id' => $complaint->customer_id,
+                'priority' => $complaint->priority,
+                'status' => $complaint->status,
+            ]
+        );
+
+        $this->notificationService->complaintCreated($complaint);
 
         return response()->json([
             'message' => 'Complaint created successfully.',
@@ -146,7 +161,10 @@ class ComplaintController extends Controller
 
     public function __construct(
         private ComplaintStatusService $statusService,
-        private SlaService $slaService
+        private SlaService $slaService,
+        private AuditService $auditService,
+        private NotificationService $notificationService
+
     ) {
     }
 }

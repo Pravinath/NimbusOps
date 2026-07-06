@@ -41,4 +41,9 @@ class Technician extends Model
     {
         return $this->hasMany(WorkOrderSparePart::class);
     }
+
+    public function feedback(): HasMany
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

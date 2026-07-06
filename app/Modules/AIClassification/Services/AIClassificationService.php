@@ -7,12 +7,16 @@ use App\Models\ComplaintAiClassification;
 use App\Modules\AIClassification\Contracts\AIClassificationProvider;
 use Illuminate\Support\Facades\DB;
 use App\Modules\SLA\Services\SlaService;
+use App\Models\User;
+use App\Modules\Audit\Services\AuditService;
+
 
 class AIClassificationService
 {
     public function __construct(
         private AIClassificationProvider $provider,
-        private SlaService $slaService
+        private SlaService $slaService,
+        private AuditService $auditService
     ) {
     }
 
@@ -71,6 +75,20 @@ class AIClassificationService
                     'confidence_score' => $result['confidence_score'],
                 ],
             ]);
+
+            $this->auditService->record(
+                'ai_classification_generated',
+                $classification,
+                User::find($userId),
+                request(),
+                [
+                    'complaint_id' => $complaint->id,
+                    'issue_category' => $result['issue_category'],
+                    'predicted_priority' => $result['predicted_priority'],
+                    'suggested_skill' => $result['suggested_skill'],
+                    'provider' => $this->provider->name(),
+                ]
+            );
 
             return $classification->fresh();
         });
