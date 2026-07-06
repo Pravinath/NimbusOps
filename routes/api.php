@@ -13,6 +13,7 @@ use App\Modules\Inventory\Controllers\InventoryController;
 use App\Modules\Feedback\Controllers\FeedbackController;
 use App\Modules\Audit\Controllers\AuditLogController;
 use App\Modules\Notification\Controllers\NotificationController;
+use App\Modules\Reporting\Controllers\ReportingController;
 
 
 
@@ -241,5 +242,50 @@ Route::middleware('role:inventory,admin')
         NotificationController::class,
         'markRead',
     ]);
+
+    Route::middleware('role:supervisor,admin')->group(function () {
+        Route::get('/admin/dashboard', [
+            ReportingController::class,
+            'dashboard',
+        ]);
+
+        Route::get('/reports/sla-performance', [
+            ReportingController::class,
+            'slaPerformance',
+        ]);
+
+        Route::get('/reports/customer-satisfaction', [
+            ReportingController::class,
+            'customerSatisfaction',
+        ]);
+
+        Route::get('/reports/monthly-complaint-trends', [
+            ReportingController::class,
+            'monthlyComplaintTrends',
+        ]);
+    });
+
+    Route::middleware('role:dispatcher,supervisor,admin')->group(function () {
+        Route::get('/reports/technician-performance', [
+            ReportingController::class,
+            'technicianPerformance',
+        ]);
+
+        Route::get('/reports/area-wise-complaints', [
+            ReportingController::class,
+            'areaWiseComplaints',
+        ]);
+
+        Route::get('/reports/common-issue-categories', [
+            ReportingController::class,
+            'commonIssueCategories',
+        ]);
+    });
+
+    Route::middleware('role:inventory,supervisor,admin')
+        ->get('/reports/spare-parts-usage', [
+            ReportingController::class,
+            'sparePartsUsage',
+        ]);
     
 });
