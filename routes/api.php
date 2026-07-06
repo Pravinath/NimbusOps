@@ -8,7 +8,7 @@ use App\Modules\Technician\Controllers\TechnicianController;
 use App\Modules\Complaint\Controllers\ComplaintController;
 use App\Modules\AIClassification\Controllers\AIClassificationController;
 use App\Modules\Dispatch\Controllers\DispatchController;
-
+use App\Modules\WorkOrder\Controllers\WorkOrderController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -108,5 +108,52 @@ Route::middleware('auth:sanctum')->group(function () {
             DispatchController::class,
             'assign',
         ]);
+
+
+    Route::middleware('role:technician,dispatcher,supervisor,admin')
+    ->group(function () {
+        Route::get('/work-orders', [
+            WorkOrderController::class,
+            'index',
+        ]);
+
+        Route::get('/work-orders/{workOrder}', [
+            WorkOrderController::class,
+            'show',
+        ]);
+    });
+
+        Route::middleware('role:technician,admin')
+            ->group(function () {
+                Route::patch('/work-orders/{workOrder}/accept', [
+                    WorkOrderController::class,
+                    'accept',
+                ]);
+
+                Route::patch('/work-orders/{workOrder}/on-the-way', [
+                    WorkOrderController::class,
+                    'onTheWay',
+                ]);
+
+                Route::patch('/work-orders/{workOrder}/start', [
+                    WorkOrderController::class,
+                    'start',
+                ]);
+
+                Route::patch('/work-orders/{workOrder}/pause', [
+                    WorkOrderController::class,
+                    'pause',
+                ]);
+
+                Route::patch('/work-orders/{workOrder}/complete', [
+                    WorkOrderController::class,
+                    'complete',
+                ]);
+
+                Route::post('/work-orders/{workOrder}/updates', [
+                    WorkOrderController::class,
+                    'addUpdate',
+                ]);
+            });
     
 });
