@@ -3,14 +3,13 @@
 namespace App\Providers;
 
 use App\Models\Complaint;
-use App\Modules\Complaint\Policies\ComplaintPolicy;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\ServiceProvider;
+use App\Models\WorkOrder;
 use App\Modules\AIClassification\Contracts\AIClassificationProvider;
 use App\Modules\AIClassification\Providers\MockAIProvider;
-use App\Models\WorkOrder;
+use App\Modules\Complaint\Policies\ComplaintPolicy;
 use App\Modules\WorkOrder\Policies\WorkOrderPolicy;
-
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {

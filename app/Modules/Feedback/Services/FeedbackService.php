@@ -14,8 +14,7 @@ class FeedbackService
 {
     public function __construct(
         private AuditService $auditService
-    ) {
-    }
+    ) {}
 
     public function submit(
         User $user,

@@ -13,8 +13,7 @@ class SlaService
     public function __construct(
         private AuditService $auditService,
         private NotificationService $notificationService
-    ) {
-    }
+    ) {}
 
     public function assignDeadline(Complaint $complaint): Complaint
     {

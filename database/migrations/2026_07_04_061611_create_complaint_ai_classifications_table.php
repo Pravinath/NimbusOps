@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
+    public function up(): void
     {
         Schema::create('complaint_ai_classifications', function (Blueprint $table) {
             $table->id();
@@ -32,10 +32,10 @@ return new class extends Migration
             $table->timestamp('classified_at');
             $table->timestamps();
 
-            $table->index([
-                'issue_category',
-                'predicted_priority',
-            ]);
+            $table->index(
+                ['issue_category', 'predicted_priority'],
+                'ai_category_priority_idx'
+            );
         });
     }
 

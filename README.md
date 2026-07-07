@@ -1,59 +1,150 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NimbusOps
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![NimbusOps CI](https://github.com/Pravinath/NimbusOps/actions/workflows/ci.yml/badge.svg)](https://github.com/Pravinath/NimbusOps/actions/workflows/ci.yml)
 
-## About Laravel
+NimbusOps is an API-first field service and complaint resolution platform built with Laravel. It covers complaint intake, AI-assisted classification, technician dispatch, work orders, SLA monitoring, spare-parts usage, feedback, notifications, auditing, and reporting.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Business Problem
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Service organizations often coordinate complaints through calls, messaging apps, and spreadsheets. That creates delayed resolution, poor SLA visibility, uneven technician workload, missing inventory history, and limited reporting. NimbusOps centralizes those workflows behind a secure REST API.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Roles
 
-## Learning Laravel
+Customer, call-center agent, dispatcher, technician, inventory manager, supervisor, and administrator.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Features
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Sanctum token authentication and active/inactive users
+- Role middleware and object-level policies
+- Customer, service-area, and technician management
+- Complaint status workflow and timeline
+- Replaceable mock AI classifier
+- Technician ranking and assignment history
+- Automatic work-order creation and job workflow
+- SLA deadlines, scheduled breach checks, and escalation
+- Inventory, stock movements, work-order usage, and low-stock alerts
+- Feedback and technician performance scores
+- Database notifications and audit logs
+- Dashboard and reporting APIs
+- Docker, Postman, PHPUnit, Pint, and GitHub Actions
 
-## Laravel Sponsors
+## Stack
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+PHP 8.3, Laravel 12, Sanctum 4, MySQL 8.4, Redis 7, Nginx, Docker Compose, PHPUnit 11, and Postman.
 
-### Premium Partners
+## Architecture
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+NimbusOps is a modular monolith. Business capabilities live in `app/Modules`; shared Eloquent models live in `app/Models`.
 
-## Contributing
+```text
+app/Modules/
+├── Auth          ├── AIClassification  ├── WorkOrder
+├── Customer      ├── Dispatch          ├── SLA
+├── ServiceArea   ├── Inventory         ├── Feedback
+├── Technician    ├── Notification      ├── Reporting
+├── Complaint     └── Audit
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+See [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## Code of Conduct
+## Docker Setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Requirements: Git and Docker Desktop.
 
-## Security Vulnerabilities
+```bash
+git clone https://github.com/Pravinath/NimbusOps.git
+cd NimbusOps
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Open:
 
-## License
+- Laravel: http://localhost:8000
+- phpMyAdmin: http://localhost:8080
+- MySQL host/user/password: `mysql` / `nimbusops` / `secret`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Stop containers with `docker compose down`.
+
+## Local Setup
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+```
+
+## Demo Accounts
+
+All demo accounts use `password123`.
+
+| Role | Email |
+|---|---|
+| Customer | customer@nimbusops.test |
+| Agent | agent@nimbusops.test |
+| Dispatcher | dispatcher@nimbusops.test |
+| Technician | technician@nimbusops.test |
+| Inventory | inventory@nimbusops.test |
+| Supervisor | supervisor@nimbusops.test |
+| Admin | admin@nimbusops.test |
+
+## API Authentication
+
+```http
+POST /api/auth/login
+Accept: application/json
+Content-Type: application/json
+
+{"email":"admin@nimbusops.test","password":"password123"}
+```
+
+Protected calls require:
+
+```http
+Authorization: Bearer YOUR_TOKEN
+Accept: application/json
+```
+
+## Postman
+
+Import:
+
+```text
+postman/NimbusOps.postman_collection.json
+postman/NimbusOps.local.postman_environment.json
+```
+
+Select `NimbusOps Local`. Login requests save tokens automatically; creation requests save IDs for later steps.
+
+## Quality Checks
+
+```bash
+composer validate --strict
+php vendor/bin/pint --test
+php artisan test --do-not-cache-result
+```
+
+Current suite: **54 tests, 167 assertions**.
+
+## Documentation
+
+- [Architecture](ARCHITECTURE.md)
+- [Database schema](DATABASE_SCHEMA.md)
+- [API](API_DOCUMENTATION.md)
+- [Security](SECURITY.md)
+- [Testing](TESTING.md)
+- [Demo workflow](docs/DEMO_FLOW.md)
+
+## Screenshots
+
+Suggested portfolio screenshots: Postman login, complaint workflow, phpMyAdmin schema, Docker containers, GitHub Actions success, and dashboard JSON.
+
+## Future Work
+
+Production AI provider, web/mobile UI, geospatial routing, queued email/SMS/push notifications, media storage, multi-tenancy, OpenAPI generation, and production observability.
+
+> Demo credentials and Docker passwords are for local development only.

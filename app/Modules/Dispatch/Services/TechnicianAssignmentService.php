@@ -19,8 +19,7 @@ class TechnicianAssignmentService
         private ComplaintStatusService $statusService,
         private AuditService $auditService,
         private NotificationService $notificationService
-    ) {
-    }
+    ) {}
 
     public function assign(
         Complaint $complaint,

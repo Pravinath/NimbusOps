@@ -13,8 +13,7 @@ class AIClassificationController extends Controller
 {
     public function __construct(
         private AIClassificationService $classificationService
-    ) {
-    }
+    ) {}
 
     public function classify(
         Request $request,

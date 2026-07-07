@@ -16,8 +16,7 @@ class DispatchController extends Controller
     public function __construct(
         private TechnicianSuggestionService $suggestionService,
         private TechnicianAssignmentService $assignmentService
-    ) {
-    }
+    ) {}
 
     public function suggestions(Complaint $complaint): JsonResponse
     {

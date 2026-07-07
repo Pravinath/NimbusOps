@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('zone')->nullable();
             $table->string('status')->default('active');
             $table->timestamps();
-                    });
+        });
     }
 
     /**

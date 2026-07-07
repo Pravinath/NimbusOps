@@ -16,8 +16,7 @@ class StockService
     public function __construct(
         private AuditService $auditService,
         private NotificationService $notificationService
-    ) {
-    }
+    ) {}
 
     public function createPart(array $data, User $user): SparePart
     {

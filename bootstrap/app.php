@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Middleware\RoleMiddleware;
+use App\Modules\SLA\Commands\CheckSlaBreaches;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Modules\SLA\Commands\CheckSlaBreaches;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,13 +17,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([
         CheckSlaBreaches::class,
     ])
-    
+
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'role' => RoleMiddleware::class,
         ]);
     })
-    
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
