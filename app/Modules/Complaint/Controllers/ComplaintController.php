@@ -4,16 +4,16 @@ namespace App\Modules\Complaint\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Modules\Audit\Services\AuditService;
 use App\Modules\Complaint\Requests\StoreComplaintRequest;
 use App\Modules\Complaint\Requests\UpdateComplaintStatusRequest;
+use App\Modules\Complaint\Services\ComplaintStatusService;
+use App\Modules\Notification\Services\NotificationService;
+use App\Modules\SLA\Services\SlaService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use App\Modules\Complaint\Services\ComplaintStatusService;
-use App\Modules\SLA\Services\SlaService;
-use App\Modules\Audit\Services\AuditService;
-use App\Modules\Notification\Services\NotificationService;
 
 class ComplaintController extends Controller
 {
@@ -165,6 +165,5 @@ class ComplaintController extends Controller
         private AuditService $auditService,
         private NotificationService $notificationService
 
-    ) {
-    }
+    ) {}
 }

@@ -13,8 +13,7 @@ class FeedbackController extends Controller
 {
     public function __construct(
         private FeedbackService $feedbackService
-    ) {
-    }
+    ) {}
 
     public function store(
         StoreFeedbackRequest $request

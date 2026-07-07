@@ -1,0 +1,1109 @@
+{
+  "info": {
+    "_postman_id": "8fc7d641-79c5-4cf2-bdb9-9f0e62bd0aec",
+    "name": "NimbusOps API",
+    "description": "Complete API collection for NimbusOps field service management. Use the Local environment and run role-specific login requests before protected actions.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('No server error', () => pm.expect(pm.response.code).to.be.below(500));"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login as Admin",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Customer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customer_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Agent",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{agent_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Dispatcher",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{dispatcher_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Technician",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{technician_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Inventory Manager",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{inventory_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Supervisor",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/login",
+            "description": "Logs in and stores the Sanctum token in the active environment.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{supervisor_email}}\",\n  \"password\": \"{{demo_password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));",
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.environment.set('token', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/register",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Portfolio Customer\",\n  \"email\": \"portfolio.customer{{$timestamp}}@nimbusops.test\",\n  \"password\": \"password123\",\n  \"role\": \"customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          }
+        },
+        {
+          "name": "Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/me",
+            "description": ""
+          }
+        },
+        {
+          "name": "Phase Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/phase-one-health",
+            "description": ""
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/auth/logout",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/customers",
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Customer Profile",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/customers",
+            "description": "Requires admin or agent role.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{customer_user_id}}\",\n  \"phone\": \"0771234567\",\n  \"address\": \"10 Main Street\",\n  \"city\": \"Colombo\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) pm.environment.set('customer_id', json.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show Customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/customers/{{customer_id}}",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Areas",
+      "item": [
+        {
+          "name": "List Service Areas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/service-areas",
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Service Area",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/service-areas",
+            "description": "Requires admin role.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Colombo Central\",\n  \"city\": \"Colombo\",\n  \"zone\": \"Zone 1\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) pm.environment.set('service_area_id', json.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show Service Area",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/service-areas/{{service_area_id}}",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Technicians",
+      "item": [
+        {
+          "name": "List Technicians",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/technicians",
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Technician Profile",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/technicians",
+            "description": "Requires admin role.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"{{technician_user_id}}\",\n  \"service_area_id\": \"{{service_area_id}}\",\n  \"skill_category\": \"network\",\n  \"availability_status\": \"available\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) pm.environment.set('technician_id', json.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show Technician",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/technicians/{{technician_id}}",
+            "description": ""
+          }
+        },
+        {
+          "name": "Update Availability",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/technicians/{{technician_id}}/availability",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availability_status\": \"available\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Technician Workload",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/technicians/{{technician_id}}/workload",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Complaints",
+      "item": [
+        {
+          "name": "List Complaints",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/complaints",
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Complaint",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/complaints",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"{{customer_id}}\",\n  \"service_area_id\": \"{{service_area_id}}\",\n  \"title\": \"Internet not working\",\n  \"description\": \"Internet is not working and the router red light is blinking.\",\n  \"priority\": \"high\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) pm.environment.set('complaint_id', json.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show Complaint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}",
+            "description": ""
+          }
+        },
+        {
+          "name": "Update Complaint Status",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}/status",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"classified\",\n  \"notes\": \"Complaint reviewed.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Complaint Timeline",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}/timeline",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Classification",
+      "item": [
+        {
+          "name": "Classify Complaint",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}/ai-classify",
+            "description": ""
+          }
+        },
+        {
+          "name": "Get Classification",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}/ai-classification",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dispatch",
+      "item": [
+        {
+          "name": "Suggest Technicians",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}/suggest-technicians",
+            "description": ""
+          }
+        },
+        {
+          "name": "Assign Technician",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/complaints/{{complaint_id}}/assign-technician",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"technician_id\": \"{{technician_id}}\",\n  \"notes\": \"Assigned based on skill, area, and workload.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) pm.environment.set('assignment_id', json.data.id);",
+                  "if (json.data && json.data.work_order) pm.environment.set('work_order_id', json.data.work_order.id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Work Orders",
+      "item": [
+        {
+          "name": "List Work Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders",
+            "description": ""
+          }
+        },
+        {
+          "name": "Show Work Order",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}",
+            "description": ""
+          }
+        },
+        {
+          "name": "Accept Work Order",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/accept",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Job accepted.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Mark On The Way",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/on-the-way",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Travelling to customer.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Start Work",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/start",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Inspection started.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Pause Work",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/pause",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Waiting for replacement part.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Add Progress Update",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/updates",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Router and network cable inspected.\",\n  \"metadata\": {\n    \"location\": \"customer_site\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Complete Work Order",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/complete",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"resolution_summary\": \"Router cable replaced and connection restored.\",\n  \"notes\": \"Customer confirmed connectivity.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "SLA",
+      "item": [
+        {
+          "name": "SLA Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/sla-performance",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Inventory",
+      "item": [
+        {
+          "name": "List Spare Parts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/spare-parts",
+            "description": ""
+          }
+        },
+        {
+          "name": "Create Spare Part",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/spare-parts",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sku\": \"NET-{{$timestamp}}\",\n  \"name\": \"Network Cable\",\n  \"description\": \"CAT6 network cable\",\n  \"stock_quantity\": 10,\n  \"reorder_level\": 3,\n  \"unit_cost\": 750,\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.id) pm.environment.set('spare_part_id', json.data.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Show Spare Part",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/spare-parts/{{spare_part_id}}",
+            "description": ""
+          }
+        },
+        {
+          "name": "Update Spare Part",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/spare-parts/{{spare_part_id}}",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reorder_level\": 4,\n  \"unit_cost\": 800\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Increase Stock",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/spare-parts/{{spare_part_id}}/stock",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"operation\": \"increase\",\n  \"quantity\": 5,\n  \"notes\": \"New stock delivery.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Use Spare Part",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/work-orders/{{work_order_id}}/use-spare-part",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"spare_part_id\": \"{{spare_part_id}}\",\n  \"quantity\": 1,\n  \"notes\": \"Used during repair.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Low Stock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/inventory/low-stock",
+            "description": ""
+          }
+        },
+        {
+          "name": "Stock Movements",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/stock-movements",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feedback",
+      "item": [
+        {
+          "name": "Submit Feedback",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "{{base_url}}/api/feedback",
+            "description": "",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"complaint_id\": \"{{complaint_id}}\",\n  \"work_order_id\": \"{{work_order_id}}\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get Complaint Feedback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/feedback/complaint/{{complaint_id}}",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/notifications",
+            "description": ""
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.data && json.data.data.length) pm.environment.set('notification_id', json.data.data[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": "{{base_url}}/api/notifications/{{notification_id}}/read",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reports",
+      "item": [
+        {
+          "name": "Admin Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/admin/dashboard",
+            "description": ""
+          }
+        },
+        {
+          "name": "SLA Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/sla-performance",
+            "description": ""
+          }
+        },
+        {
+          "name": "Technician Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/technician-performance",
+            "description": ""
+          }
+        },
+        {
+          "name": "Area-wise Complaints",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/area-wise-complaints",
+            "description": ""
+          }
+        },
+        {
+          "name": "Spare Parts Usage",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/spare-parts-usage",
+            "description": ""
+          }
+        },
+        {
+          "name": "Customer Satisfaction",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/customer-satisfaction",
+            "description": ""
+          }
+        },
+        {
+          "name": "Common Issue Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/common-issue-categories",
+            "description": ""
+          }
+        },
+        {
+          "name": "Monthly Complaint Trends",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/reports/monthly-complaint-trends",
+            "description": ""
+          }
+        }
+      ]
+    },
+    {
+      "name": "Audit Logs",
+      "item": [
+        {
+          "name": "List Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/audit-logs",
+            "description": ""
+          }
+        },
+        {
+          "name": "Filter Audit Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/audit-logs?action=complaint_created",
+            "description": ""
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -16,8 +16,7 @@ class WorkOrderController extends Controller
 {
     public function __construct(
         private WorkOrderStatusService $statusService
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {

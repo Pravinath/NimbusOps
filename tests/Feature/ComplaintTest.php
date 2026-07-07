@@ -138,7 +138,6 @@ class ComplaintTest extends TestCase
             ->assertForbidden();
     }
 
-
     public function test_complaint_cannot_skip_status_workflow(): void
     {
         $customerUser = User::factory()->create([

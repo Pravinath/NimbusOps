@@ -99,14 +99,12 @@ class ReportingService
     {
         return ServiceArea::withCount([
             'complaints',
-            'complaints as pending_complaints_count' => fn ($query) =>
-                $query->whereNotIn('status', [
-                    'resolved',
-                    'closed',
-                    'cancelled',
-                ]),
-            'complaints as resolved_complaints_count' => fn ($query) =>
-                $query->whereIn('status', ['resolved', 'closed']),
+            'complaints as pending_complaints_count' => fn ($query) => $query->whereNotIn('status', [
+                'resolved',
+                'closed',
+                'cancelled',
+            ]),
+            'complaints as resolved_complaints_count' => fn ($query) => $query->whereIn('status', ['resolved', 'closed']),
         ])->orderByDesc('complaints_count')->get();
     }
 
@@ -151,8 +149,7 @@ class ReportingService
         return Complaint::query()
             ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
             ->get(['id', 'status', 'created_at'])
-            ->groupBy(fn (Complaint $complaint) =>
-                $complaint->created_at->format('Y-m'))
+            ->groupBy(fn (Complaint $complaint) => $complaint->created_at->format('Y-m'))
             ->map(fn (Collection $complaints, string $month) => [
                 'month' => $month,
                 'total' => $complaints->count(),

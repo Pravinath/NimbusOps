@@ -14,8 +14,7 @@ class DatabaseEventNotification extends Notification
         private string $title,
         private string $message,
         private array $context = []
-    ) {
-    }
+    ) {}
 
     public function via(object $notifiable): array
     {

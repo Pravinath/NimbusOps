@@ -160,30 +160,28 @@ class WorkOrderTest extends TestCase
         return [$technicianUser, $workOrder, $technician];
     }
 
+    public function test_assigned_technician_can_add_progress_note(): void
+    {
+        [$technicianUser, $workOrder] = $this->createWorkOrder();
 
-
-        public function test_assigned_technician_can_add_progress_note(): void
-        {
-            [$technicianUser, $workOrder] = $this->createWorkOrder();
-
-            $this->actingAs($technicianUser, 'sanctum')
-                ->postJson("/api/work-orders/{$workOrder->id}/updates", [
-                    'notes' => 'Router and network cable inspected.',
-                    'metadata' => [
-                        'location' => 'customer_site',
-                    ],
-                ])
-                ->assertCreated()
-                ->assertJsonPath(
-                    'data.notes',
-                    'Router and network cable inspected.'
-                );
-
-            $this->assertDatabaseHas('work_order_updates', [
-                'work_order_id' => $workOrder->id,
-                'user_id' => $technicianUser->id,
-                'update_type' => 'note_added',
+        $this->actingAs($technicianUser, 'sanctum')
+            ->postJson("/api/work-orders/{$workOrder->id}/updates", [
                 'notes' => 'Router and network cable inspected.',
-            ]);
-        }
+                'metadata' => [
+                    'location' => 'customer_site',
+                ],
+            ])
+            ->assertCreated()
+            ->assertJsonPath(
+                'data.notes',
+                'Router and network cable inspected.'
+            );
+
+        $this->assertDatabaseHas('work_order_updates', [
+            'work_order_id' => $workOrder->id,
+            'user_id' => $technicianUser->id,
+            'update_type' => 'note_added',
+            'notes' => 'Router and network cable inspected.',
+        ]);
+    }
 }

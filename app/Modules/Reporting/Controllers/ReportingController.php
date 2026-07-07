@@ -10,8 +10,7 @@ class ReportingController extends Controller
 {
     public function __construct(
         private ReportingService $reportingService
-    ) {
-    }
+    ) {}
 
     public function dashboard(): JsonResponse
     {

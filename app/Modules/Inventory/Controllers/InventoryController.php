@@ -18,8 +18,7 @@ class InventoryController extends Controller
 {
     public function __construct(
         private StockService $stockService
-    ) {
-    }
+    ) {}
 
     public function index(): JsonResponse
     {

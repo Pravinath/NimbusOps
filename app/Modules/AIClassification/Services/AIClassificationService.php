@@ -4,12 +4,11 @@ namespace App\Modules\AIClassification\Services;
 
 use App\Models\Complaint;
 use App\Models\ComplaintAiClassification;
-use App\Modules\AIClassification\Contracts\AIClassificationProvider;
-use Illuminate\Support\Facades\DB;
-use App\Modules\SLA\Services\SlaService;
 use App\Models\User;
+use App\Modules\AIClassification\Contracts\AIClassificationProvider;
 use App\Modules\Audit\Services\AuditService;
-
+use App\Modules\SLA\Services\SlaService;
+use Illuminate\Support\Facades\DB;
 
 class AIClassificationService
 {
@@ -17,8 +16,7 @@ class AIClassificationService
         private AIClassificationProvider $provider,
         private SlaService $slaService,
         private AuditService $auditService
-    ) {
-    }
+    ) {}
 
     public function classify(
         Complaint $complaint,

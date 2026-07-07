@@ -26,8 +26,7 @@ class WorkOrderStatusService
         private ComplaintStatusService $complaintStatusService,
         private AuditService $auditService,
         private NotificationService $notificationService
-    ) {
-    }
+    ) {}
 
     public function transition(
         WorkOrder $workOrder,
