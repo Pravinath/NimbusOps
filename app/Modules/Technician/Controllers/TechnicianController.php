@@ -45,7 +45,12 @@ class TechnicianController extends Controller
         UpdateAvailabilityRequest $request,
         Technician $technician
     ): JsonResponse {
+        if ($request->user()->role === 'technician' && $technician->user_id !== $request->user()->id) {
+            abort(403, 'Technicians can only update their own availability.');
+        }
+
         $technician->update($request->validated());
+        $technician->load(['user', 'serviceArea']);
 
         return response()->json([
             'message' => 'Availability updated successfully.',

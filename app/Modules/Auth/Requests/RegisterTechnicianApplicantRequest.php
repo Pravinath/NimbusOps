@@ -4,7 +4,7 @@ namespace App\Modules\Auth\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class RegisterTechnicianApplicantRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -16,9 +16,6 @@ class RegisterRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email', 'unique:users,email'],
-            'phone' => ['required', 'string', 'max:30'],
-            'address' => ['required', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:120'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ];
     }
