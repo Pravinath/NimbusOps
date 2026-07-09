@@ -175,4 +175,65 @@ class ComplaintTest extends TestCase
             'status' => 'new',
         ]);
     }
+
+    public function test_customer_can_view_own_complaint_timeline(): void
+    {
+        $customerUser = User::factory()->create([
+            'role' => 'customer',
+            'status' => 'active',
+        ]);
+
+        $customer = Customer::create([
+            'user_id' => $customerUser->id,
+            'address' => '10 Main Street',
+            'city' => 'Colombo',
+            'status' => 'active',
+        ]);
+
+        $complaint = Complaint::create([
+            'customer_id' => $customer->id,
+            'created_by_user_id' => $customerUser->id,
+            'title' => 'AC not cooling',
+            'description' => 'The office AC is not cooling.',
+            'status' => 'new',
+            'priority' => 'medium',
+        ]);
+
+        $complaint->timelines()->create([
+            'user_id' => $customerUser->id,
+            'event_type' => 'complaint_created',
+            'to_status' => 'new',
+            'notes' => 'Complaint created.',
+        ]);
+
+        $this->actingAs($customerUser, 'sanctum')
+            ->getJson("/api/complaints/{$complaint->id}/timeline")
+            ->assertOk()
+            ->assertJsonPath('data.0.event_type', 'complaint_created')
+            ->assertJsonPath('data.0.to_status', 'new')
+            ->assertJsonPath('data.0.user.name', $customerUser->name);
+    }
+
+    public function test_customer_cannot_view_another_customers_complaint_timeline(): void
+    {
+        $firstUser = User::factory()->create(['role' => 'customer']);
+        $secondUser = User::factory()->create(['role' => 'customer']);
+
+        $secondCustomer = Customer::create([
+            'user_id' => $secondUser->id,
+            'address' => '20 Main Street',
+            'city' => 'Colombo',
+        ]);
+
+        $complaint = Complaint::create([
+            'customer_id' => $secondCustomer->id,
+            'created_by_user_id' => $secondUser->id,
+            'title' => 'Private timeline',
+            'description' => 'Only the owner should see this timeline.',
+        ]);
+
+        $this->actingAs($firstUser, 'sanctum')
+            ->getJson("/api/complaints/{$complaint->id}/timeline")
+            ->assertForbidden();
+    }
 }
