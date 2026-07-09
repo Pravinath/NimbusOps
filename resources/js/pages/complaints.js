@@ -1,4 +1,4 @@
-﻿const N = window.NimbusOps;
+const N = window.NimbusOps;
 
 N.loadComplaintFormOptions = async function loadComplaintFormOptions() {
     if (N.currentUser?.role === 'customer') {
@@ -57,28 +57,154 @@ N.complaintCustomerName = function complaintCustomerName(complaint) {
         ?? `Customer #${complaint.customer_id ?? '-'}`;
 }
 
-N.renderComplaintTable = function renderComplaintTable(complaints) {
+N.formatDateTime = function formatDateTime(value) {
+    if (!value) return '-';
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return '-';
+    }
+
+    return date.toLocaleString([], {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
+}
+
+N.complaintTrackingStep = function complaintTrackingStep(status) {
+    const normalized = String(status ?? 'new').toLowerCase();
+    const order = ['new', 'classified', 'assigned', 'in_progress', 'resolved', 'closed'];
+    const index = order.indexOf(normalized);
+
+    if (normalized === 'cancelled') return 20;
+    if (index === -1) return 25;
+
+    return Math.max(12, Math.round(((index + 1) / order.length) * 100));
+}
+
+N.complaintNextStep = function complaintNextStep(status) {
+    const messages = {
+        new: 'Your request has been received and is waiting for review.',
+        classified: 'NimbusOps reviewed the issue and is preparing technician assignment.',
+        assigned: 'A technician has been assigned. Watch for visit and work order updates.',
+        in_progress: 'The technician is working on this request now.',
+        resolved: 'The issue was resolved. You can review the outcome and give feedback.',
+        closed: 'This service request is closed.',
+        cancelled: 'This service request was cancelled.',
+    };
+
+    return messages[String(status ?? 'new').toLowerCase()] ?? 'NimbusOps is tracking the next operational update.';
+}
+
+N.renderComplaintTable = function renderComplaintTable(complaints, includeTrackingAction = false) {
     return `
-        <div class="table-row table-head">
+        <div class="table-row table-head complaint-table-row ${includeTrackingAction ? 'with-action' : ''}">
             <span>Ticket</span>
             <span>Customer</span>
             <span>Status</span>
             <span>Priority</span>
+            ${includeTrackingAction ? '<span>Tracking</span>' : ''}
         </div>
         ${complaints.map((complaint) => {
             const status = complaint.status ?? 'pending';
             const priority = complaint.priority ?? complaint.severity ?? 'normal';
 
             return `
-                <div class="table-row">
+                <div class="table-row complaint-table-row ${includeTrackingAction ? 'with-action' : ''}">
                     <span>#CMP-${N.escapeHtml(complaint.id)}</span>
                     <span>${N.escapeHtml(N.complaintCustomerName(complaint))}</span>
-                    <span><b class="badge ${N.statusBadgeClass(status)}">${N.escapeHtml(status)}</b></span>
-                    <span>${N.escapeHtml(priority)}</span>
+                    <span><b class="badge ${N.statusBadgeClass(status)}">${N.escapeHtml(N.roleLabel(status))}</b></span>
+                    <span>${N.escapeHtml(N.roleLabel(priority))}</span>
+                    ${includeTrackingAction ? `<span><button class="small-button track-complaint-button" type="button" data-complaint-id="${N.escapeHtml(complaint.id)}">Track</button></span>` : ''}
                 </div>
             `;
         }).join('')}
     `;
+}
+
+N.renderComplaintTrackingPanel = function renderComplaintTrackingPanel(complaint, timeline) {
+    const status = complaint.status ?? 'new';
+    const progress = N.complaintTrackingStep(status);
+    const events = timeline.length
+        ? timeline.map((event) => `
+            <article class="tracking-event">
+                <span></span>
+                <div>
+                    <strong>${N.escapeHtml(N.roleLabel(event.event_type ?? 'update'))}</strong>
+                    <p>${N.escapeHtml(event.notes ?? N.complaintNextStep(event.to_status ?? status))}</p>
+                    <small>${N.escapeHtml(N.formatDateTime(event.created_at))}${event.user?.name ? ` by ${N.escapeHtml(event.user.name)}` : ''}</small>
+                </div>
+            </article>
+        `).join('')
+        : '<div class="empty-state compact"><strong>No timeline updates yet.</strong><span>Your first update will appear after review starts.</span></div>';
+
+    return `
+        <section class="panel tracking-panel" id="complaintTrackingPanel">
+            <div class="panel-header">
+                <div>
+                    <p class="eyebrow">Live request tracking</p>
+                    <h2>#CMP-${N.escapeHtml(complaint.id)} ${N.escapeHtml(complaint.title ?? 'Service request')}</h2>
+                </div>
+                <button id="closeTrackingPanelButton" type="button">Close</button>
+            </div>
+
+            <div class="tracking-layout">
+                <article class="tracking-summary-card">
+                    <span class="badge ${N.statusBadgeClass(status)}">${N.escapeHtml(N.roleLabel(status))}</span>
+                    <h3>${N.escapeHtml(N.complaintNextStep(status))}</h3>
+                    <div class="progress-track request-progress"><span style="width: ${progress}%"></span></div>
+                    <dl class="tracking-meta">
+                        <div><dt>Priority</dt><dd>${N.escapeHtml(N.roleLabel(complaint.priority ?? 'medium'))}</dd></div>
+                        <div><dt>Service area</dt><dd>${N.escapeHtml(complaint.service_area?.name ?? complaint.serviceArea?.name ?? 'Not selected')}</dd></div>
+                        <div><dt>Preferred visit</dt><dd>${N.escapeHtml(N.formatDateTime(complaint.preferred_visit_time))}</dd></div>
+                        <div><dt>SLA due</dt><dd>${N.escapeHtml(N.formatDateTime(complaint.sla_due_at))}</dd></div>
+                    </dl>
+                </article>
+
+                <article class="tracking-timeline-card">
+                    <h3>Status history</h3>
+                    <div class="tracking-events">${events}</div>
+                </article>
+            </div>
+        </section>
+    `;
+}
+
+N.openComplaintTracking = async function openComplaintTracking(workspace, complaintId) {
+    const existingPanel = document.querySelector('#complaintTrackingPanel');
+    if (existingPanel) existingPanel.remove();
+
+    const content = document.querySelector('#complaintsContent');
+    content.insertAdjacentHTML('beforebegin', '<section class="panel tracking-panel" id="complaintTrackingPanel"><div class="empty-state">Loading tracking details...</div></section>');
+
+    try {
+        const [complaintResult, timelineResult] = await Promise.all([
+            N.fetchApi(`/api/complaints/${complaintId}`),
+            N.fetchApi(`/api/complaints/${complaintId}/timeline`),
+        ]);
+
+        document.querySelector('#complaintTrackingPanel').outerHTML = N.renderComplaintTrackingPanel(
+            complaintResult.data,
+            timelineResult.data ?? []
+        );
+
+        document.querySelector('#closeTrackingPanelButton').addEventListener('click', () => {
+            document.querySelector('#complaintTrackingPanel')?.remove();
+        });
+        document.querySelector('#complaintTrackingPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (error) {
+        document.querySelector('#complaintTrackingPanel').innerHTML = `<div class="empty-state error-state"><strong>Could not load tracking.</strong><span>${N.escapeHtml(error.message)}</span></div>`;
+    }
+}
+
+N.bindComplaintTrackingActions = function bindComplaintTrackingActions(workspace) {
+    document.querySelectorAll('.track-complaint-button').forEach((button) => {
+        button.addEventListener('click', () => N.openComplaintTracking(workspace, button.dataset.complaintId));
+    });
 }
 
 N.handleCreateComplaint = async function handleCreateComplaint(event, workspace) {
@@ -279,7 +405,8 @@ N.renderComplaintsPage = async function renderComplaintsPage(workspace) {
         }
 
         content.className = 'table';
-        content.innerHTML = N.renderComplaintTable(complaints);
+        content.innerHTML = N.renderComplaintTable(complaints, true);
+        N.bindComplaintTrackingActions(workspace);
     } catch (error) {
         const content = document.querySelector('#complaintsContent');
         content.className = 'empty-state error-state';
