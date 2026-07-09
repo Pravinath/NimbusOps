@@ -3,11 +3,13 @@
 namespace App\Modules\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Customer;
 use App\Models\User;
 use App\Modules\Auth\Requests\LoginRequest;
 use App\Modules\Auth\Requests\RegisterRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -15,15 +17,32 @@ class AuthController extends Controller
 {
     public function register(RegisterRequest $request): JsonResponse
     {
-        $user = User::create([
-            'name' => $request->string('name'),
-            'email' => $request->string('email'),
-            'password' => $request->string('password'),
-            'role' => $request->input('role', 'customer'),
-            'status' => 'active',
-        ]);
+        $user = DB::transaction(function () use ($request): User {
+            $user = User::create([
+                'name' => $request->string('name'),
+                'email' => $request->string('email'),
+                'password' => $request->string('password'),
+                'role' => 'customer',
+                'status' => 'active',
+            ]);
+
+            Customer::create([
+                'user_id' => $user->id,
+                'phone' => $request->string('phone'),
+                'address' => $request->string('address'),
+                'city' => $request->string('city'),
+                'status' => 'active',
+            ]);
+
+            return $user;
+        });
 
         $token = $user->createToken('api-token')->plainTextToken;
+        $user->load(
+            'customer',
+            'technician.serviceArea',
+            'technicianApplication.preferredServiceArea'
+        );
 
         return response()->json([
             'message' => 'Registration successful.',
@@ -49,6 +68,11 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
+        $user->load(
+            'customer',
+            'technician.serviceArea',
+            'technicianApplication.preferredServiceArea'
+        );
 
         return response()->json([
             'message' => 'Login successful.',
@@ -60,7 +84,11 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         return response()->json([
-            'user' => $request->user(),
+            'user' => $request->user()->load(
+                'customer',
+                'technician.serviceArea',
+                'technicianApplication.preferredServiceArea'
+            ),
         ]);
     }
 

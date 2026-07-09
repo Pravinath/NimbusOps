@@ -8,6 +8,7 @@ enum UserRole: string
     case Agent = 'agent';
     case Dispatcher = 'dispatcher';
     case Technician = 'technician';
+    case TechnicianApplicant = 'technician_applicant';
     case Inventory = 'inventory';
     case Supervisor = 'supervisor';
     case Admin = 'admin';

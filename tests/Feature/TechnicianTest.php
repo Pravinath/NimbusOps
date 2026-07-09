@@ -80,6 +80,66 @@ class TechnicianTest extends TestCase
         ]);
     }
 
+    public function test_technician_can_update_own_availability(): void
+    {
+        $technicianUser = User::factory()->create([
+            'role' => 'technician',
+            'status' => 'active',
+        ]);
+
+        $technician = Technician::create([
+            'user_id' => $technicianUser->id,
+            'skill_category' => 'electrical',
+            'availability_status' => 'available',
+        ]);
+
+        $this->actingAs($technicianUser, 'sanctum')
+            ->patchJson("/api/technicians/{$technician->id}/availability", [
+                'availability_status' => 'on_leave',
+            ])
+            ->assertOk()
+            ->assertJsonPath('data.availability_status', 'on_leave');
+
+        $this->assertDatabaseHas('technicians', [
+            'id' => $technician->id,
+            'availability_status' => 'on_leave',
+        ]);
+    }
+
+    public function test_technician_cannot_update_another_technicians_availability(): void
+    {
+        $technicianUser = User::factory()->create([
+            'role' => 'technician',
+            'status' => 'active',
+        ]);
+        $otherTechnicianUser = User::factory()->create([
+            'role' => 'technician',
+            'status' => 'active',
+        ]);
+
+        Technician::create([
+            'user_id' => $technicianUser->id,
+            'skill_category' => 'network',
+            'availability_status' => 'available',
+        ]);
+        $otherTechnician = Technician::create([
+            'user_id' => $otherTechnicianUser->id,
+            'skill_category' => 'electrical',
+            'availability_status' => 'available',
+        ]);
+
+        $this->actingAs($technicianUser, 'sanctum')
+            ->patchJson("/api/technicians/{$otherTechnician->id}/availability", [
+                'availability_status' => 'busy',
+            ])
+            ->assertForbidden();
+
+        $this->assertDatabaseHas('technicians', [
+            'id' => $otherTechnician->id,
+            'availability_status' => 'available',
+        ]);
+    }
+
     public function test_invalid_skill_category_is_rejected(): void
     {
         $admin = User::factory()->create([

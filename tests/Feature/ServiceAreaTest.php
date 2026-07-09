@@ -38,4 +38,17 @@ class ServiceAreaTest extends TestCase
     {
         $this->getJson('/api/service-areas')->assertUnauthorized();
     }
+
+    public function test_customer_can_view_service_areas_for_request_creation(): void
+    {
+        $customer = User::factory()->create([
+            'role' => 'customer',
+            'status' => 'active',
+        ]);
+
+        $this->actingAs($customer, 'sanctum')
+            ->getJson('/api/service-areas')
+            ->assertOk()
+            ->assertJsonStructure(['data']);
+    }
 }
