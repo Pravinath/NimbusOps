@@ -95,6 +95,7 @@ class TechnicianApplicationTest extends TestCase
             ->getJson('/api/technician-applications/me')
             ->assertForbidden();
     }
+
     public function test_applicant_can_upload_application_document(): void
     {
         Storage::fake('local');

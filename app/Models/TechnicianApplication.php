@@ -50,6 +50,7 @@ class TechnicianApplication extends Model
     {
         return $this->belongsTo(User::class, 'reviewed_by_user_id');
     }
+
     public function documents(): HasMany
     {
         return $this->hasMany(TechnicianApplicationDocument::class);

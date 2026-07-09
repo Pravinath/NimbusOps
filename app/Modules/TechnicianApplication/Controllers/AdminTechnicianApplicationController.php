@@ -37,7 +37,6 @@ class AdminTechnicianApplicationController extends Controller
         ]);
     }
 
-
     public function viewDocument(
         TechnicianApplication $technicianApplication,
         TechnicianApplicationDocument $document
@@ -55,6 +54,7 @@ class AdminTechnicianApplicationController extends Controller
             'Content-Disposition' => 'inline; filename="'.addslashes($document->original_name).'"',
         ]);
     }
+
     public function updateStatus(
         ReviewTechnicianApplicationRequest $request,
         TechnicianApplication $technicianApplication

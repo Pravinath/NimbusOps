@@ -128,7 +128,6 @@ class AdminTechnicianApplicationReviewTest extends TestCase
             ->assertUnprocessable();
     }
 
-
     public function test_admin_can_view_application_document(): void
     {
         Storage::fake('local');
@@ -178,6 +177,7 @@ class AdminTechnicianApplicationReviewTest extends TestCase
             ->get("/api/admin/technician-applications/{$otherApplication->id}/documents/{$document->id}/view")
             ->assertNotFound();
     }
+
     private function createTechnicianApplicationForReview(): TechnicianApplication
     {
         $applicant = User::factory()->create([

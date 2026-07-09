@@ -80,7 +80,6 @@ class TechnicianTest extends TestCase
         ]);
     }
 
-
     public function test_technician_can_update_own_availability(): void
     {
         $technicianUser = User::factory()->create([
@@ -140,6 +139,7 @@ class TechnicianTest extends TestCase
             'availability_status' => 'available',
         ]);
     }
+
     public function test_invalid_skill_category_is_rejected(): void
     {
         $admin = User::factory()->create([
